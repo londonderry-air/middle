@@ -1,4 +1,4 @@
-import { Token } from "token/models/token";
+import { Token } from "src/token/models/token";
 
 export const genTextToken = (
     id: number,

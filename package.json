@@ -9,7 +9,7 @@
   "scripts": {
     "exec": "ts-node -r tsconfig-paths/register src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
+    "build": "tsc",
     "prepare": "npm run build"
   },
   "author": "",

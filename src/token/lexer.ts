@@ -1,5 +1,5 @@
 import { AnalysisState } from 'src/element/models/element';
-import { LIST_ELM_REGXP, PRE_ELM_REGXP } from 'shared/variables';
+import { LIST_ELM_REGXP, PRE_ELM_REGXP } from 'src/shared/variables';
   
 export const isListMatch = (md: string) => md.match(LIST_ELM_REGXP)
 export const isPreMatch = (md: string) => md.match(PRE_ELM_REGXP)

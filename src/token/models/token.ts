@@ -1,4 +1,4 @@
-import { Attribute, ElementType } from "element/models/element"
+import { Attribute, ElementType } from "src/element/models/element"
 
 export type Token = {
    id: number

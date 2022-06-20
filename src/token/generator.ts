@@ -1,4 +1,4 @@
-import { Token, MergedToken  } from 'token/models/token'
+import { Token, MergedToken  } from 'src/token/models/token'
 
 const isAllElmParentRoot = (tokens: Array<Token | MergedToken>) => {
     return tokens
