@@ -14,7 +14,7 @@ const getAnalysisState = (md: string): AnalysisState => {
   return 'neutral'
 }
 
-const mdArray: Array<string> = []
+let mdArray: Array<string> = []
 let state: AnalysisState = 'neutral'
 let listStr = ''
 let preStr = ''
@@ -93,7 +93,7 @@ const analysePre = (
 
 const analize = (markdown: string) => {
     const rawMdArray = markdown.split(/\r\n|\r|\n/);
-  
+    mdArray = []
     rawMdArray.forEach((md, index) => {
       const isLastRow = index === rawMdArray.length - 1
       const isListMatch = analyseList(md, state, isLastRow)
@@ -103,7 +103,7 @@ const analize = (markdown: string) => {
         mdArray.push(md);
       }
     });
-    //console.log(rawMdArray)
+    console.log(rawMdArray)
     console.log(mdArray)
   
     return mdArray;
