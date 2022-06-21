@@ -1,7 +1,7 @@
 import { Token } from "token/models/token";
 
 export const genTextToken = (
-    id: number,
+    id: string,
     text: string, 
     parent: Token
 ): Token => {
@@ -14,7 +14,7 @@ export const genTextToken = (
 }
 
 export const genStrongToken = (
-    id: number,
+    id: string,
     text: string, 
     parent: Token
 ): Token => {
@@ -27,7 +27,7 @@ export const genStrongToken = (
 }
 
 export const genParagraphToken = (
-  id: number,
+  id: string,
   text: string,
   parent: Token
 ): Token => ({

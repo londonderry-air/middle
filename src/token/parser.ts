@@ -3,9 +3,10 @@ import { Token, TokenizeSource } from 'token/models/token'
 import { genTextToken, genParagraphToken } from 'token/generator';
 import { isListMatch, isPreMatch } from './lexer';
 import { TEXT_ELM_REGXPS } from 'shared/variables';
+import { getRandomStr } from 'shared/string';
 
 const rootToken: Token = {
-  id: 0,
+  id: getRandomStr(),
   elmType: 'root',
   content: '',
   parent: {} as Token,
@@ -25,17 +26,14 @@ export const parse = (markdownRow: string) => {
 const tokenizeWithNoPrefix = (parent: Token, id: number, text: string): Token[] => {
     const elements = []
     if (parent.elmType === 'li') {
-        const paragraphToken = genParagraphToken(id++, '', parent)
+        const paragraphToken = genParagraphToken(getRandomStr(), '', parent)
         elements.push(paragraphToken)
     } 
-    const onlyTextToken = genTextToken(id++, text, parent)
+    const onlyTextToken = genTextToken(getRandomStr(), text, parent)
     elements.push(onlyTextToken)
 
     return elements
 }
-
-// 解析中のテキストを空にして、処理を終了させる
-const finishTokenize = (text: string) => text = ''
 
 // 解析中の文字が残っている場合は、トークン化の処理を続ける
 const isContinueTokenize = (text: string) => text.length !== 0
@@ -61,7 +59,9 @@ const tokenizeText = (
   
     const _tokenize = (originalText: string, p: Token) => {
         let analysingText = originalText;
-        parent = p;
+        let paragraphToken = p
+        parent = p
+
         // その行が空文字になるまで処理を繰り返す
         while (isContinueTokenize(analysingText)) {
             const matchList: TokenizeSource[] = TEXT_ELM_REGXPS
@@ -69,15 +69,16 @@ const tokenizeText = (
                     element: item.element,
                     matchList: analysingText.match(item.regexp) as RegExpMatchArray
                 }))
-                .filter(item => !!item.matchList)
+                .filter(item => item.matchList)
             const isNoPrefixFound = matchList.length === 0
 
             // most short text
             if (isNoPrefixFound) {
-                const tokens = tokenizeWithNoPrefix(parent, id, analysingText)
+                const tokens = tokenizeWithNoPrefix(paragraphToken, id, analysingText)
                 elements.push(...tokens)
 
-                finishTokenize(analysingText)
+                // 解析中のテキストを空にして、処理を終了させる
+                analysingText = ''
             } else {
                 const mostOuterToken = getMostOuterTokenizeSource(matchList)
                 const isSetParagraphParentToken = mostOuterToken.element !== 'h1' &&
@@ -98,21 +99,20 @@ const tokenizeText = (
                 const isTextExistBeforePrefix = (mostOuterToken.matchList.index ?? -1) > 0
 
                 if (isSetParagraphParentToken) {
-                    const token = {
-                        id,
+                    paragraphToken = {
+                        id: getRandomStr(),
                         elmType: 'paragraph',
                         content: '',
                         parent,
                     } as Token;
-                    elements.push(token)
-
-                    parent = token
+                    parent = paragraphToken
+                    elements.push(parent)
                 }
 
                 if (isTextExistBeforePrefix) {
                     const text = analysingText.substring(0, mostOuterToken.matchList.index)
                     const token = genTextToken(
-                        id++,
+                        getRandomStr(),
                         text,
                         parent
                     )
@@ -123,7 +123,7 @@ const tokenizeText = (
                 }
 
                 if (parent.elmType === 'code') {
-                    const token = genTextToken(id++, mostOuterToken.matchList[0], parent)
+                    const token = genTextToken(getRandomStr(), mostOuterToken.matchList[0], parent)
                     elements.push(token)
 
                     analysingText = analysingText.replace(mostOuterToken.matchList[0], '')
@@ -147,15 +147,15 @@ const tokenizeText = (
                     }
 
                     const token: Token = {
-                        id: id++,
+                        id: getRandomStr(),
                         elmType: mostOuterToken.element,
                         content: mostOuterToken.matchList[1],
                         parent: parent,
                         attributes: attributes
                     }
-                    elements.push(token)
-                    
+
                     parent = token
+                    elements.push(token)
 
                     // remove tokenised text
                     analysingText = analysingText.replace(mostOuterToken.matchList[0], '')
@@ -163,6 +163,7 @@ const tokenizeText = (
                     // 再起的に呼び出す
                     _tokenize(mostOuterToken.matchList[1], parent)
                 }
+                parent = p
             }
         }
     }
@@ -175,7 +176,7 @@ export const tokenizeList = (listString: string) => {
   
     let id = 1;
     const rootUlToken: Token = {
-      id,
+      id: getRandomStr(),
       elmType: 'ul',
       content: '',
       parent: rootToken,
@@ -189,7 +190,7 @@ export const tokenizeList = (listString: string) => {
     
             id += 1;
             const listToken: Token = {
-                id,
+                id: getRandomStr(),
                 elmType: 'li',
                 content: '', // Indent level
                 parent: rootUlToken,
@@ -205,7 +206,7 @@ export const tokenizeList = (listString: string) => {
 export const tokenizePre = (md: string) => {
     let id = 1
     const rootPreToken: Token = {
-        id,
+        id: getRandomStr(),
         elmType: 'pre',
         content: '',
         parent: rootToken
@@ -215,13 +216,13 @@ export const tokenizePre = (md: string) => {
     const match = md.match(PRE_INSIDE_TEXT_REGXP) as RegExpMatchArray
 
     const codeToken: Token = {
-        id,
+        id: getRandomStr(),
         elmType: 'code',
         content: '',
         parent: rootPreToken
     }
     const textToken: Token = {
-        id,
+        id: getRandomStr(),
         elmType: 'text',
         content: match[1],
         parent: codeToken
@@ -235,7 +236,7 @@ export const tokenizePre = (md: string) => {
 const _createBreakToken = (): Token[] => {
     return [
       {
-        id: 1,
+        id: getRandomStr(),
         elmType: 'break',
         content: '',
         parent: rootToken,

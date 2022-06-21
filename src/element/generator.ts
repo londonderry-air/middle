@@ -26,9 +26,12 @@ const getInsertPosition = (content: string) => {
 const createMergedContent = (
     currentToken: Token | MergedToken,
     parentToken: Token | MergedToken
-  ) => {
+) => {
     let content = '';
     switch (parentToken.elmType) {
+      case 'paragraph':
+        content = `<p>${currentToken.content}</p>`;
+        break;
       case 'h1':
         content = `<h1>${currentToken.content}</h1>`;
         break;
@@ -87,7 +90,6 @@ const _generateHtmlString = (tokens: Array<Token | MergedToken>) => {
 };
 
 const generate = (asts: Token[][]) => {
-  // console.log(asts)
     const htmlStrings = asts.map((lineTokens) => {
       let rearrangedAst: Array<Token | MergedToken> = lineTokens.reverse();
 
