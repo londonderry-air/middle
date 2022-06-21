@@ -1,4 +1,4 @@
-import { ElementType } from "src/element/models/element"
+import { ElementType } from "element/models/element"
 
 export const H1_ELM_REGXP = /^# (.+)$/
 export const H2_ELM_REGXP = /^## (.+)$/

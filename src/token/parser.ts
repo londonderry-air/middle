@@ -1,8 +1,8 @@
-import { Attribute } from 'src/element/models/element';
-import { Token, TokenizeSource } from 'src/token/models/token'
-import { genTextToken, genParagraphToken } from 'src/element/generator';
+import { Attribute } from 'element/models/element';
+import { Token, TokenizeSource } from 'token/models/token'
+import { genTextToken, genParagraphToken } from 'token/generator';
 import { isListMatch, isPreMatch } from './lexer';
-import { TEXT_ELM_REGXPS } from 'src/shared/variables';
+import { TEXT_ELM_REGXPS } from 'shared/variables';
 
 const rootToken: Token = {
   id: 0,

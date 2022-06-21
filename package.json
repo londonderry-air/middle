@@ -9,13 +9,14 @@
   "scripts": {
     "exec": "ts-node -r tsconfig-paths/register src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "prepare": "npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "ts-node": "^10.8.1",
+    "tsc-alias": "^1.6.11",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.7.3"
   }

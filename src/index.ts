@@ -1,6 +1,6 @@
-import { generate } from 'src/token/generator';
-import { analize } from 'src/token/lexer';
-import { parse } from 'src/token/parser'
+import { generate } from 'element/generator';
+import { analize } from 'token/lexer';
+import { parse } from 'token/parser'
 
 const gen = (markdown: string) => {
   const mdArray = analize(markdown);

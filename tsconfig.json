@@ -31,11 +31,11 @@
     "strict": true,                                      /* Enable all strict type-checking options. */
     "skipLibCheck": true  ,                               /* Skip type checking all .d.ts files. */
     "baseUrl": ".",
-    //"paths": {
-    //  "element/*": ["src/element/*"],
-    //  "token/*": ["src/token/*"],
-    //  "shared/*": ["src/shared/*"]
-    //},
+    "paths": {
+      "element/*": ["src/element/*"],
+      "token/*": ["src/token/*"],
+      "shared/*": ["src/shared/*"]
+    },
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
