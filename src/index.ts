@@ -9,4 +9,11 @@ const gen = (markdown: string) => {
   return htmlString
 }
 
+//console.log(gen(`# h1
+//## h2
+//### h3
+//#### h4
+//この記事では、[asmsuechan.com](https://asmsuechan.com)を**参考**に解説したいと思います。
+//ff**bold**ff`))
+
 export { gen }

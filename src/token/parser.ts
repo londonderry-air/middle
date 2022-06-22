@@ -2,7 +2,7 @@ import { Attribute } from 'element/models/element';
 import { Token, TokenizeSource } from 'token/models/token'
 import { genTextToken, genParagraphToken } from 'token/generator';
 import { isListMatch, isPreMatch } from './lexer';
-import { TEXT_ELM_REGXPS } from 'shared/variables';
+import { PARAGRAPH_NOT_COVERED_ELM_REGXPS, TEXT_ELM_REGXPS } from 'shared/variables';
 import { getRandomStr } from 'shared/string';
 
 const rootToken: Token = {
@@ -56,6 +56,28 @@ const tokenizeText = (
     let parent: Token = initialRoot;
   
     let id = initialId;
+
+    const isParagraphCoverdLine = PARAGRAPH_NOT_COVERED_ELM_REGXPS
+        .map(item => ({
+            element: item.element,
+            matchList: textElement.match(item.regexp) as RegExpMatchArray
+        }))
+        .filter(item => item.matchList)
+        .length === 0 // pタグで囲まない要素がある場合は、ループ処理内でそれぞれ pタグ の判定をつける
+        && parent.elmType !== 'li' // liの中は pタグで囲まないため、子要素の内容にかかわらず囲まないようにする
+        && parent.elmType !== 'pre' // preの中は pタグで囲まないため、子要素の内容にかかわらず囲まないようにする
+
+    if (isParagraphCoverdLine) {
+        const rootParagraphToken = {
+            id: getRandomStr(),
+            elmType: 'paragraph',
+            content: '',
+            parent, // initialRoot
+        } as Token;
+
+        parent = rootParagraphToken
+        elements.push(rootParagraphToken)
+    }
   
     const _tokenize = (originalText: string, p: Token) => {
         let analysingText = originalText;
@@ -92,9 +114,11 @@ const tokenizeText = (
                     parent.elmType !== 'h4' &&
                     parent.elmType !== 'h5' &&
                     parent.elmType !== 'ul' &&
+                    parent.elmType !== 'li' &&
                     parent.elmType !== 'ol' &&
                     parent.elmType !== 'link' &&
-                    parent.elmType !== 'code'
+                    parent.elmType !== 'code' &&
+                    !isParagraphCoverdLine
                 // Prefix が先頭でない場所に見つかった場合
                 const isTextExistBeforePrefix = (mostOuterToken.matchList.index ?? -1) > 0
 
@@ -197,7 +221,6 @@ export const tokenizeList = (listString: string) => {
             };
             tokens.push(listToken);
             const listText: Token[] = tokenizeText(match[3], id, listToken);
-            id += listText.length;
             tokens.push(...listText);
         });
     return tokens;
