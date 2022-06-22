@@ -1,8 +1,8 @@
 import { Attribute } from 'element/models/element';
 import { Token, TokenizeSource } from 'token/models/token'
 import { genTextToken, genParagraphToken } from 'token/generator';
-import { isListMatch, isPreMatch } from './lexer';
-import { PARAGRAPH_NOT_COVERED_ELM_REGXPS, TEXT_ELM_REGXPS } from 'shared/variables';
+import { isBlockquoteMatch, isListMatch, isPreMatch } from './lexer';
+import { BLOCKQUOTE_ELM_REGXP, PARAGRAPH_NOT_COVERED_ELM_REGXPS, TEXT_ELM_REGXPS } from 'shared/variables';
 import { getRandomStr } from 'shared/string';
 
 const rootToken: Token = {
@@ -12,18 +12,21 @@ const rootToken: Token = {
   parent: {} as Token,
 };
 
-export const parse = (markdownRow: string) => {
-    if (isListMatch(markdownRow)) {
-        return tokenizeList(markdownRow)
+export const parse = (mdRow: string) => {
+    if (isListMatch(mdRow)) {
+        return tokenizeList(mdRow)
     }
-    if (isPreMatch(markdownRow)) {
-        return tokenizePre(markdownRow)
+    if (isPreMatch(mdRow)) {
+        return tokenizePre(mdRow)
     }
-    return tokenizeText(markdownRow)
+    if (isBlockquoteMatch(mdRow)) {
+        return tokenizeBlockquote(mdRow)
+    }
+    return tokenizeText(mdRow)
 }
 
 // マークダウンに合わない場合、この関数を使用してトークン化する
-const tokenizeWithNoPrefix = (parent: Token, id: number, text: string): Token[] => {
+const tokenizeWithNoPrefix = (parent: Token, text: string): Token[] => {
     const elements = []
     if (parent.elmType === 'li') {
         const paragraphToken = genParagraphToken(getRandomStr(), '', parent)
@@ -49,13 +52,10 @@ const getMostOuterTokenizeSource = (sources: TokenizeSource[]) => {
   
 const tokenizeText = (
     textElement: string,
-    initialId: number = 0,
     initialRoot: Token = rootToken
 ) => {
     let elements: Token[] = [];
     let parent: Token = initialRoot;
-  
-    let id = initialId;
 
     const isParagraphCoverdLine = PARAGRAPH_NOT_COVERED_ELM_REGXPS
         .map(item => ({
@@ -96,7 +96,7 @@ const tokenizeText = (
 
             // most short text
             if (isNoPrefixFound) {
-                const tokens = tokenizeWithNoPrefix(paragraphToken, id, analysingText)
+                const tokens = tokenizeWithNoPrefix(paragraphToken, analysingText)
                 elements.push(...tokens)
 
                 // 解析中のテキストを空にして、処理を終了させる
@@ -197,8 +197,6 @@ const tokenizeText = (
 }
 
 export const tokenizeList = (listString: string) => {
-  
-    let id = 1;
     const rootUlToken: Token = {
       id: getRandomStr(),
       elmType: 'ul',
@@ -211,8 +209,6 @@ export const tokenizeList = (listString: string) => {
         .filter(Boolean)
         .forEach((l) => {
             const match = isListMatch(l) as RegExpMatchArray
-    
-            id += 1;
             const listToken: Token = {
                 id: getRandomStr(),
                 elmType: 'li',
@@ -220,7 +216,7 @@ export const tokenizeList = (listString: string) => {
                 parent: rootUlToken,
             };
             tokens.push(listToken);
-            const listText: Token[] = tokenizeText(match[3], id, listToken);
+            const listText: Token[] = tokenizeText(match[3], listToken);
             tokens.push(...listText);
         });
     return tokens;
@@ -252,6 +248,71 @@ export const tokenizePre = (md: string) => {
     }
     tokens.push(codeToken)
     tokens.push(textToken)
+
+    return tokens
+}
+
+export const tokenizeBlockquote = (md: string) => {
+    let rootBqToken: Token = {
+        id: getRandomStr(),
+        elmType: 'blockquote',
+        content: '',
+        parent: rootToken
+    }
+    let tokens: Token[] = []
+    let bqTokens: Token[] = [] // ネストの深さを配列の長さで管理する
+    let prevNestLevel = 0 // １つ前の行におけるネストの深さ
+
+    // ネストの深さを取得
+    // ネストは先頭から連続する場合のみ取得するので、 > の間に文字がある場合は無効
+    const getQuoteNestLevel = (mdRow: string) => {
+        let copyMdRow = mdRow
+        let level = 0
+        while(copyMdRow.indexOf('>') !== -1) {
+            if (copyMdRow.indexOf('>') === 0) {
+                level += 1
+                copyMdRow = copyMdRow.substring(1)
+            } else {
+                break
+            }
+        }
+        return level
+    }
+    md.split('\n')
+        .filter(mdRow => mdRow.length !== 0)
+        .forEach(mdRow => {
+        const match = mdRow.match(BLOCKQUOTE_ELM_REGXP) as RegExpMatchArray;
+        const currentNestLevel = getQuoteNestLevel(mdRow)
+        const isInitial = prevNestLevel === 0
+        const isMoreNested = currentNestLevel > prevNestLevel
+        if (isMoreNested || isInitial) {
+            [...Array(currentNestLevel - prevNestLevel)].forEach(() => {
+                const nestLevel = prevNestLevel + 1
+                const bqToken: Token = {
+                    id: getRandomStr(),
+                    elmType: 'blockquote',
+                    content: '',
+                    parent: bqTokens.length === 0 ? rootToken : bqTokens[prevNestLevel]
+                }
+                const textTokens = tokenizeText(match[2], bqToken)
+
+                // ネスト管理用の配列を更新
+                bqTokens[nestLevel] = bqToken
+
+                // 作成されたトークンを格納
+                tokens.push(bqToken, ...textTokens)
+
+                // ネストの深さを反映
+                prevNestLevel += 1
+            })
+        } else {
+            // 階層が深くならない場合は、現在のネストレベルに合わせて親トークンを設定する
+            const textTokens = tokenizeText(match[2], bqTokens[currentNestLevel])
+            tokens.push(...textTokens)
+
+            prevNestLevel = currentNestLevel
+        }
+    })
 
     return tokens
 }

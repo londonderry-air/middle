@@ -18,6 +18,7 @@ export type ElementType = 'root'
     | 'paragraph'
     | 'break'
     | 'pre'
+    | 'blockquote'
 
 export type Attribute = {
     attrName: string
@@ -27,3 +28,4 @@ export type Attribute = {
 export type AnalysisState = 'neutral'
     | 'list'
     | 'pre'
+    | 'blockquote'

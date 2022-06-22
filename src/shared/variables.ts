@@ -13,6 +13,7 @@ export const CODE_ELM_REGXP = /`(.+?)`/
 export const PRE_ELM_REGXP = /```[^`]*$/
 export const LINK_ELM_REGXP = /\[(.*)\]\((.*)\)/
 export const LIST_ELM_REGXP = /^( *)([-\*\+] (.+))$/m
+export const BLOCKQUOTE_ELM_REGXP = /^([>| ]+)(.+)/
 
 
 export const TEXT_ELM_REGXPS: {
