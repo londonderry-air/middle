@@ -2,39 +2,16 @@ import { generate } from 'element/generator';
 import { analize } from 'token/lexer';
 import { parse } from 'token/parser'
 import { COMPONENT_REGXP } from 'shared/variables';
-import React from 'react';
-
-// import env variables
-require('dotenv').config();
-
-const genDynamicElement = (
-  dynamic: any, // add next-dynamic
-  tokens: HTMLToken[]
-) => {
-  const componentPath = process.env.MIDDLE_COMPONENT_PATH 
-    ?? process.env.NEXT_PUBLIC_MIDDLE_COMPONENT_PATH
-    ?? ''
-  const elements = tokens.map(t => {
-      if (t.isHTML) {
-          return <div dangerouslySetInnerHTML={{__html: t.content as string}} />
-      } else {
-          const content = t.content as {component: string, props: string[]}
-          const Component = dynamic(() => import(componentPath + content.component))
-          return Component ? <Component /> : <></>
-      }
-  })
-  return <>{elements.map(e => e)}</>
-}
 
 const gen = (
   markdown: string,
   dynamic: any // add next/dynamic
-): JSX.Element => {
+): HTMLToken[] => {
   const mdArray = analize(markdown);
   const asts = mdArray.map(md => parse(md));
   const htmlStrings = generate(asts)
 
-  const tokens: HTMLToken[] =  htmlStrings.map((html) => {
+  return htmlStrings.map((html) => {
     const cmpMatch = html.match(COMPONENT_REGXP) as RegExpExecArray
     return {
       isHTML: cmpMatch === null,
@@ -51,8 +28,6 @@ const gen = (
         : html
     }
   })
-
-  return genDynamicElement(dynamic, tokens)
 }
 
 //console.log(gen(`
