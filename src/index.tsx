@@ -4,6 +4,9 @@ import { parse } from 'token/parser'
 import { COMPONENT_REGXP } from 'shared/variables';
 import React from 'react';
 
+// import env variables
+require('dotenv').config();
+
 const genDynamicElement = (
   dynamic: any, // add next-dynamic
   tokens: HTMLToken[]
