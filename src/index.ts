@@ -39,7 +39,7 @@ console.log(gen(`
 
 console.log(gen(`@cmp[title](CalmingClassic)`))
 
-export { gen }
+export { gen, HTMLToken }
 
 type HTMLToken = {
   isHTML: boolean
