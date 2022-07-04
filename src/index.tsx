@@ -5,7 +5,6 @@ import { COMPONENT_REGXP } from 'shared/variables';
 
 const gen = (
   markdown: string,
-  dynamic: any // add next/dynamic
 ): HTMLToken[] => {
   const mdArray = analize(markdown);
   const asts = mdArray.map(md => parse(md));
