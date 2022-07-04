@@ -1,6 +1,6 @@
-import { Token, MergedToken  } from 'token/models/token'
+import { Token, MergedToken, ComponentToken  } from 'token/models/token'
 
-const isAllElmParentRoot = (tokens: Array<Token | MergedToken>) => {
+const isAllElmParentRoot = (tokens: Array<Token | MergedToken | ComponentToken>) => {
     return tokens
         .map((t) => t.parent?.elmType)
         .every((val) => val === 'root');
@@ -24,9 +24,9 @@ const getInsertPosition = (content: string) => {
 }
 
 const createMergedContent = (
-    currentToken: Token | MergedToken,
-    parentToken: Token | MergedToken
-) => {
+    currentToken: Token | MergedToken | ComponentToken,
+    parentToken: Token | MergedToken | ComponentToken
+): string => {
     let content = '';
     switch (parentToken.elmType) {
       case 'paragraph':
@@ -76,12 +76,6 @@ const createMergedContent = (
         const src = parentToken.attributes ? parentToken.attributes[0].attrValue : '';
         content = `<img src="${src}" alt="${currentToken.content}" />`;
         break;
-      case 'component':
-        const filename = currentToken.content
-        const props = parentToken.props
-        console.log(`FileName: ${filename}`)
-        props?.forEach(p => console.log(`Props: ${p}`))
-        break;
       case 'merged':
         const position = getInsertPosition(parentToken.content);
         content = `${parentToken.content.slice(0, position)}${
@@ -91,16 +85,17 @@ const createMergedContent = (
     return content;
 }
 
-const _generateHtmlString = (tokens: Array<Token | MergedToken>) => {
-  return tokens
-    .map((t) => t.content)
-    .reverse()
-    .join('');
+// all tokens has root parent
+const _generateHtmlString = (token: Token | MergedToken | ComponentToken) => {
+  if (token.elmType === 'component') {
+    return `@cmp[${token.content}](${token.props})`
+  }
+  return token.content
 };
 
-const generate = (asts: Token[][]) => {
+const generate = (asts: Token[][]): string[] => {
     const htmlStrings = asts.map((lineTokens) => {
-      let rearrangedAst: Array<Token | MergedToken> = lineTokens.reverse();
+      let rearrangedAst: Array<Token | MergedToken | ComponentToken> = lineTokens.reverse();
 
       // 全トークンがトップ（root直下）になるまで、繰り返して行う.
       while (!isAllElmParentRoot(rearrangedAst)) {
@@ -119,22 +114,35 @@ const generate = (asts: Token[][]) => {
             const parentIndex = rearrangedAst.findIndex((t) => t.id === currentToken.parent.id);
             const parentToken = rearrangedAst[parentIndex];
 
-            // create MergedToken（　階層を１つ挙げる　）
-            const mergedToken: MergedToken = {
-              id: parentToken.id,
-              elmType: 'merged',
-              content: createMergedContent(currentToken, parentToken),
-              parent: parentToken.parent,
-            };
-
-            // 階層を上げたので、元の ParentToken を MergedToken に置き換える
-            rearrangedAst.splice(parentIndex, 1, mergedToken);
+            // component token
+            if (parentToken.elmType === 'component') {
+              const componentToken: ComponentToken = {
+                id: parentToken.id,
+                elmType: 'component',
+                content: currentToken.content,
+                parent: parentToken.parent,
+                props: parentToken.props
+              }
+              // 階層を上げたので、元の ParentToken を ComponentToken に置き換える
+              rearrangedAst.splice(parentIndex, 1, componentToken);
+            } else {
+              // create MergedToken（　階層を１つ挙げる　）
+              const mergedToken: MergedToken = {
+                id: parentToken.id,
+                elmType: 'merged',
+                content: createMergedContent(currentToken, parentToken),
+                parent: parentToken.parent,
+              };
+              // 階層を上げたので、元の ParentToken を MergedToken に置き換える
+              rearrangedAst.splice(parentIndex, 1, mergedToken);
+            }
           }
         }
       }
-      return _generateHtmlString(rearrangedAst);
+      return _generateHtmlString(rearrangedAst[0]);
     });
-    return htmlStrings.join('');
+
+    return htmlStrings;
   }
 
 export { generate };

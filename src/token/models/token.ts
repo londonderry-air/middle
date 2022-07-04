@@ -18,6 +18,16 @@ export type MergedToken = {
    props?: string[]
 }
 
+
+export type ComponentToken = {
+   id: string;
+   elmType: 'component';
+   content: string;
+   parent: Token | MergedToken;
+   attributes?: Attribute[];
+   props?: string[]
+}
+
 export type TokenizeSource = {
    element: ElementType,
    matchList: RegExpMatchArray
