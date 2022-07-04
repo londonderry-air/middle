@@ -14,6 +14,7 @@ export const PRE_ELM_REGXP = /```[^`]*$/
 export const LINK_ELM_REGXP = /\[(.*)\]\((.*)\)/
 export const LIST_ELM_REGXP = /^( *)([-\*\+] (.+))$/m
 export const BLOCKQUOTE_ELM_REGXP = /^([>| ]+)(.+)/
+export const COMPONENT_REGXP = /@cmp\[(.*)\]\((.*)\)/
 
 
 export const TEXT_ELM_REGXPS: {
@@ -32,7 +33,8 @@ export const TEXT_ELM_REGXPS: {
     {element: 'list', regexp: LIST_ELM_REGXP},
     {element: 'link', regexp: LINK_ELM_REGXP},
     {element: 'img', regexp: IMG_ELM_REGXP},
-    {element: 'pre', regexp: PRE_ELM_REGXP}
+    {element: 'pre', regexp: PRE_ELM_REGXP},
+    {element: 'component', regexp: COMPONENT_REGXP}
 ]
 
 export const PARAGRAPH_NOT_COVERED_ELM_REGXPS: {
@@ -46,4 +48,5 @@ export const PARAGRAPH_NOT_COVERED_ELM_REGXPS: {
     {element: 'h5', regexp: H5_ELM_REGXP},
     {element: 'code', regexp: CODE_ELM_REGXP},
     {element: 'list', regexp: LIST_ELM_REGXP},
+    {element: 'component', regexp: COMPONENT_REGXP},
 ]

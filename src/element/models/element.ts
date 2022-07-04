@@ -19,6 +19,7 @@ export type ElementType = 'root'
     | 'break'
     | 'pre'
     | 'blockquote'
+    | 'component'
 
 export type Attribute = {
     attrName: string

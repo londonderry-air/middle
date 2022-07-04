@@ -6,6 +6,7 @@ export type Token = {
    elmType: ElementType
    content: string
    attributes?: Attribute[]
+   props?: string[]
 }
 
 export type MergedToken = {
@@ -13,7 +14,8 @@ export type MergedToken = {
    elmType: 'merged';
    content: string;
    parent: Token | MergedToken;
-   attributes?: Attribute[]
+   attributes?: Attribute[];
+   props?: string[]
 }
 
 export type TokenizeSource = {

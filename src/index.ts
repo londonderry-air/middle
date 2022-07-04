@@ -16,7 +16,9 @@ console.log(gen(`
 >> Nest2
 >>> GoodNight2
 >> Nest22
-## Hello,Inidex
+@cmp[title](CalmingClassic)
 `))
+console.log('--------------------')
+console.log(gen(`@cmp[title](CalmingClassic)`))
 
 export { gen }

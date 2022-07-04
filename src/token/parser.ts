@@ -66,6 +66,7 @@ const tokenizeText = (
         .length === 0 // pタグで囲まない要素がある場合は、ループ処理内でそれぞれ pタグ の判定をつける
         && parent.elmType !== 'li' // liの中は pタグで囲まないため、子要素の内容にかかわらず囲まないようにする
         && parent.elmType !== 'pre' // preの中は pタグで囲まないため、子要素の内容にかかわらず囲まないようにする
+        && parent.elmType !== 'component'
 
     if (isParagraphCoverdLine) {
         const rootParagraphToken = {
@@ -108,6 +109,7 @@ const tokenizeText = (
                     mostOuterToken.element !== 'h3' &&
                     mostOuterToken.element !== 'h4' &&
                     mostOuterToken.element !== 'h5' &&
+                    mostOuterToken.element !== 'component' &&
                     parent.elmType !== 'h1' &&
                     parent.elmType !== 'h2' &&
                     parent.elmType !== 'h3' &&
@@ -118,7 +120,9 @@ const tokenizeText = (
                     parent.elmType !== 'ol' &&
                     parent.elmType !== 'link' &&
                     parent.elmType !== 'code' &&
+                    parent.elmType !== 'component' &&
                     !isParagraphCoverdLine
+
                 // Prefix が先頭でない場所に見つかった場合
                 const isTextExistBeforePrefix = (mostOuterToken.matchList.index ?? -1) > 0
 
@@ -153,8 +157,10 @@ const tokenizeText = (
                     analysingText = analysingText.replace(mostOuterToken.matchList[0], '')
                 } else {
                     const attributes: Attribute[] = []
+                    const props: string[] = []
                     const isImgToken = mostOuterToken.element === 'img'
                     const isLinkToken = mostOuterToken.element === 'link'
+                    const isComponentToken = mostOuterToken.element === 'component'
 
                     if (isImgToken) {
                         attributes.push({
@@ -170,12 +176,23 @@ const tokenizeText = (
                         })
                     }
 
+                    if (isComponentToken) {
+                        mostOuterToken.matchList[2]
+                            .split(',')
+                            .forEach(p => {
+                                if (p[p.length - 1] === ' ') p.slice(0, -1)
+                                if (p[0] === ' ') p.slice(0, -1)
+                                props.push(p)
+                            })
+                    }
+
                     const token: Token = {
                         id: getRandomStr(),
                         elmType: mostOuterToken.element,
                         content: mostOuterToken.matchList[1],
                         parent: parent,
-                        attributes: attributes
+                        attributes: attributes,
+                        props: props
                     }
 
                     parent = token

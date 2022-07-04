@@ -76,6 +76,12 @@ const createMergedContent = (
         const src = parentToken.attributes ? parentToken.attributes[0].attrValue : '';
         content = `<img src="${src}" alt="${currentToken.content}" />`;
         break;
+      case 'component':
+        const filename = currentToken.content
+        const props = parentToken.props
+        console.log(`FileName: ${filename}`)
+        props?.forEach(p => console.log(`Props: ${p}`))
+        break;
       case 'merged':
         const position = getInsertPosition(parentToken.content);
         content = `${parentToken.content.slice(0, position)}${
