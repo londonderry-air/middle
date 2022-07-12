@@ -145,11 +145,12 @@ const analize = (markdown: string) => {
       const isBlockquote = analyseBlockquote(md, state, isLastRow)
       
       if (!isListMode && !isPreMode && !isBlockquote) {
-        mdArray.push(md)
-        state = 'neutral'
+        mdArray.push(md);
       }
     });
-
+    // console.log(rawMdArray)
+    // console.log(mdArray)
+  
     return mdArray;
   };
 
