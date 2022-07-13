@@ -77,6 +77,7 @@ const analysePre = (md: string, prevState: AnalysisState): boolean => {
       .replace(/"/g, "&quot;");
     mdArray.push(preStr);
 
+    state = "neutral";
     return true;
   }
 
@@ -142,8 +143,8 @@ const analize = (markdown: string) => {
   rawMdArray.forEach((md, index) => {
     const isLastRow = index === rawMdArray.length - 1;
     const isListMode = analyseList(md, state, isLastRow);
-    const isPreMode = analysePre(md, state);
     const isBlockquote = analyseBlockquote(md, state, isLastRow);
+    const isPreMode = analysePre(md, state);
 
     if (!isListMode && !isPreMode && !isBlockquote) {
       mdArray.push(md);

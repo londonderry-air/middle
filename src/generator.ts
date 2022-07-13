@@ -1,17 +1,27 @@
-import { Token, MergedToken } from "./types";
+import { Token, MergedToken, CSSClassList } from "./types";
 
 const isAllElmParentRoot = (tokens: Array<Token | MergedToken>) => {
   return tokens.map((t) => t.parent?.elmType).every((val) => val === "root");
 };
 
 const getInsertPosition = (content: string) => {
-  let state = 0;
   const closeTagParentheses = ["<", ">"];
   let position = 0;
-  content.split("").some((c, i) => {
+  let searchPos = 0;
+  let state = 0;
+  const chars = content.split("");
+  while (state < 2) {
+    if (state === 1 && chars[searchPos] === closeTagParentheses[state]) {
+      position = searchPos;
+      state++;
+    } else if (state === 0 && chars[searchPos] === closeTagParentheses[state]) {
+      state++;
+    }
+    searchPos++;
+  }
+  content.split("").forEach((c, i) => {
     if (state === 1 && c === closeTagParentheses[state]) {
       position = i;
-      return true;
     } else if (state === 0 && c === closeTagParentheses[state]) {
       state++;
     }
@@ -21,42 +31,65 @@ const getInsertPosition = (content: string) => {
 
 const createMergedContent = (
   currentToken: Token | MergedToken,
-  parentToken: Token | MergedToken
+  parentToken: Token | MergedToken,
+  cssList: CSSClassList
 ) => {
   let content = "";
   switch (parentToken.elmType) {
     case "paragraph":
-      content = `<p>${currentToken.content}</p>`;
+      content = `<p${cssList.paragraph ? `class="${cssList.paragraph}"` : ""}>${
+        currentToken.content
+      }</p>`;
       break;
     case "h1":
-      content = `<h1>${currentToken.content}</h1>`;
+      content = `<h1${cssList.h1 ? ` class="${cssList.h1}"` : ""}>${
+        currentToken.content
+      }</h1>`;
       break;
     case "h2":
-      content = `<h2>${currentToken.content}</h2>`;
+      content = `<h2${cssList.h2 ? ` class="${cssList.h2}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</h2>`;
       break;
     case "h3":
-      content = `<h3>${currentToken.content}</h3>`;
+      content = `<h3${cssList.h3 ? ` class="${cssList.h3}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</h3>`;
       break;
     case "h4":
-      content = `<h4>${currentToken.content}</h4>`;
+      content = `<h4${cssList.h4 ? ` class="${cssList.h4}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</h4>`;
       break;
     case "h5":
-      content = `<h5>${currentToken.content}</h5>`;
+      content = `<h5${cssList.h1 ? ` class="${cssList.h1}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</h5>`;
       break;
     case "li":
-      content = `<li>${currentToken.content}</li>`;
+      content = `<li${cssList.li ? ` class="${cssList.li}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</li>`;
       break;
     case "ul":
-      content = `<ul>${currentToken.content}</ul>`;
+      content = `<ul${cssList.ul ? ` class="${cssList.ul}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</ul>`;
       break;
     case "blockquote":
-      content = `<blockquote>${currentToken.content}</blockquote>`;
+      content = `<blockquote${
+        cssList.blockquote ? ` class="${cssList.blockquote}"` : ""
+      }>${currentToken.content}</blockquote>`;
       break;
     case "strong":
-      content = `<strong>${currentToken.content}</strong>`;
+      content = `<strong${cssList.strong ? ` class="${cssList.strong}"` : ""}>${
+        currentToken.content
+      }>${currentToken.content}</strong>`;
       break;
     case "code":
-      content = `<code>${currentToken.content}</code>`;
+      content = `<code${cssList.code ? ` class="${cssList.code}"` : ""}>${
+        currentToken.content
+      }</code>`;
       break;
     case "pre":
       content = `<pre>${currentToken.content}</pre>`;
@@ -66,14 +99,18 @@ const createMergedContent = (
       const href = parentToken.attributes
         ? parentToken.attributes[0].attrValue
         : "";
-      content = `<a href="${href}">${currentToken.content}</a>`;
+      content = `<a href="${href}"${cssList.a ? ` class="${cssList.a}"` : ""}>${
+        currentToken.content
+      }</a>`;
       break;
     case "img":
       // eslint-disable-next-line no-case-declarations
       const src = parentToken.attributes
         ? parentToken.attributes[0].attrValue
         : "";
-      content = `<img src="${src}" alt="${currentToken.content}" />`;
+      content = `<img src="${src}" alt="${currentToken.content}"${
+        cssList.img ? ` class="${cssList.img}"` : ""
+      }>${currentToken.content} />`;
       break;
     case "merged":
       // eslint-disable-next-line no-case-declarations
@@ -92,7 +129,7 @@ const _generateHtmlString = (tokens: Array<Token | MergedToken>) => {
     .join("");
 };
 
-const generate = (asts: Token[][]) => {
+const generate = (asts: Token[][], cssList: CSSClassList) => {
   const htmlStrings = asts.map((lineTokens) => {
     let rearrangedAst: Array<Token | MergedToken> = lineTokens.reverse();
 
@@ -119,7 +156,7 @@ const generate = (asts: Token[][]) => {
           const mergedToken: MergedToken = {
             id: parentToken.id,
             elmType: "merged",
-            content: createMergedContent(currentToken, parentToken),
+            content: createMergedContent(currentToken, parentToken, cssList),
             parent: parentToken.parent,
           };
 

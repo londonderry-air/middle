@@ -27,6 +27,26 @@ export type Attribute = {
   attrValue: string;
 };
 
+export type CSSClassList = {
+  h1?: string;
+  h2?: string;
+  h3?: string;
+  h4?: string;
+  h5?: string;
+  strong?: string;
+  itaric?: string;
+  si?: string;
+  ul?: string;
+  li?: string;
+  img?: string;
+  ol?: string;
+  a?: string;
+  code?: string;
+  paragraph?: string;
+  blockquote?: string;
+  root?: string;
+};
+
 export type AnalysisState = "neutral" | "list" | "pre" | "blockquote";
 
 export type Token = {
@@ -41,15 +61,6 @@ export type Token = {
 export type MergedToken = {
   id: string;
   elmType: "merged";
-  content: string;
-  parent: Token | MergedToken;
-  attributes?: Attribute[];
-  props?: string[];
-};
-
-export type ComponentToken = {
-  id: string;
-  elmType: "component";
   content: string;
   parent: Token | MergedToken;
   attributes?: Attribute[];
