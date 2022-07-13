@@ -60,7 +60,7 @@ const analysePre = (md: string, prevState: AnalysisState): boolean => {
 
   // preモード継続
   if (isPrevPreState && !isCurrentPreState) {
-    preStr += md;
+    preStr += `${md}\n`;
     return true;
   }
 
@@ -78,7 +78,7 @@ const analysePre = (md: string, prevState: AnalysisState): boolean => {
   if (!isPrevPreState && isCurrentPreState) {
     const [, lang] = md.split("```");
     state = "pre";
-    preStr += md.replace(lang, "") + (lang !== "" ? `[[!${lang}!]]` : "");
+    preStr += md.replace(lang, "") + (lang !== "" ? `[[!${lang}!]]\n` : "\n");
 
     return true;
   }

@@ -230,16 +230,18 @@ export const tokenizeList = (listString: string) => {
 };
 
 export const tokenizePre = (md: string) => {
-  const id = 1;
   const rootPreToken: Token = {
     id: getRandomStr(),
     elmType: "pre",
     content: "",
     parent: rootToken,
   };
+  console.log(md);
   const tokens: Token[] = [rootPreToken];
-  const PRE_INSIDE_TEXT_REGXP = /```(.*?)```/;
+  const PRE_INSIDE_TEXT_REGXP = /```([\s\S]*?)```/;
   const match = md.match(PRE_INSIDE_TEXT_REGXP) as RegExpMatchArray;
+
+  console.log(match);
 
   const codeToken: Token = {
     id: getRandomStr(),

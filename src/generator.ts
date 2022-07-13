@@ -95,10 +95,11 @@ const createMergedContent = (
       content = `<code class="hljs">${
         codeType
           ? hljs.highlight(currentToken.content.replace(codeType[0], ""), {
-              language: "javascript",
+              language: codeType[1],
             }).value
           : currentToken.content
       }</code>`;
+      content.replace("\n", "<br>");
       if (typeof window === "undefined" && codeType) {
         const link = `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/${cssList.code}.min.css">`;
         content = link + content;
