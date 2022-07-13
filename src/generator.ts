@@ -86,7 +86,7 @@ const createMergedContent = (
     case "strong":
       content = `<strong${cssList.strong ? ` class="${cssList.strong}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</strong>`;
+      }</strong>`;
       break;
     case "code":
       console.log(currentToken.content);
@@ -133,7 +133,7 @@ const createMergedContent = (
         : "";
       content = `<img src="${src}" alt="${currentToken.content}"${
         cssList.img ? ` class="${cssList.img}"` : ""
-      }>${currentToken.content} />`;
+      }>`;
       break;
     case "merged":
       // eslint-disable-next-line no-case-declarations
