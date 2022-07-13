@@ -113,7 +113,9 @@ const createMergedContent = (
       }
       break;
     case "pre":
-      content = `<pre>${currentToken.content}</pre>`;
+      content = `<pre${cssList.pre ? ` class="${cssList.pre}"` : ""}>${
+        currentToken.content
+      }</pre>`;
       break;
     case "link":
       // eslint-disable-next-line no-case-declarations
