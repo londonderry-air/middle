@@ -11,4 +11,17 @@ const gen = (markdown: string, classes?: CSSClassList) => {
   return htmlString;
 };
 
+console.log(
+  gen(
+    `
+\`\`\`ts
+const h = () => {
+  console.log(Hello,World!)
+}
+\`\`\`
+`,
+    { code: "tokyo-dark-night" }
+  )
+);
+
 export { gen };

@@ -92,7 +92,7 @@ const createMergedContent = (
       console.log(currentToken.content);
       // eslint-disable-next-line no-case-declarations
       const codeType = currentToken.content.match(CODE_TYPE_REGXP);
-      content = `<code>${
+      content = `<code class="hljs">${
         codeType
           ? hljs.highlight(currentToken.content.replace(codeType[0], ""), {
               language: "javascript",
