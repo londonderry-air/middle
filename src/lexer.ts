@@ -127,6 +127,7 @@ const analyseBlockquote = (
     // Quote 終了（最終行のため）
     if (isLastRow) {
       mdArray.push(bqStr);
+      bqStr = "";
     }
 
     return true;

@@ -9,16 +9,4 @@ const gen = (markdown: string) => {
   return htmlString;
 };
 
-console.log(
-  gen(`
-Nextjsで作成している個人プロジェクトにframer-motionでページ間遷移しようとしたけど、exitが機能しない。。
-何が悪かったのかわかったので、その備忘録。
-  
-### 症状は？
-  
-> export const Layout = (props: { children: React.ReactNode }) => {
->  return (
-`)
-);
-
 export { gen };
