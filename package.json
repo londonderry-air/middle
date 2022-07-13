@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "highlight.js": "^11.5.1",
     "ts-node": "^10.8.1",
     "tsc-alias": "^1.6.11",
     "tsconfig-paths": "^4.0.0",

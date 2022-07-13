@@ -1,4 +1,6 @@
+import { CODE_TYPE_REGXP } from "./regex";
 import { Token, MergedToken, CSSClassList } from "./types";
+import hljs from "highlight.js";
 
 const isAllElmParentRoot = (tokens: Array<Token | MergedToken>) => {
   return tokens.map((t) => t.parent?.elmType).every((val) => val === "root");
@@ -87,9 +89,27 @@ const createMergedContent = (
       }>${currentToken.content}</strong>`;
       break;
     case "code":
-      content = `<code${cssList.code ? ` class="${cssList.code}"` : ""}>${
-        currentToken.content
+      console.log(currentToken.content);
+      // eslint-disable-next-line no-case-declarations
+      const codeType = currentToken.content.match(CODE_TYPE_REGXP);
+      content = `<code>${
+        codeType
+          ? hljs.highlight(currentToken.content.replace(codeType[0], ""), {
+              language: "javascript",
+            }).value
+          : currentToken.content
       }</code>`;
+      if (typeof window === "undefined" && codeType) {
+        const link = `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/${cssList.code}.min.css">`;
+        content = link + content;
+      }
+      if (typeof window !== "undefined" && codeType) {
+        const head = document.getElementsByTagName("head")[0];
+        const link = document.createElement("link");
+        link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/${cssList.code}.min.css`;
+        link.rel = "stylesheet";
+        head.appendChild(link);
+      }
       break;
     case "pre":
       content = `<pre>${currentToken.content}</pre>`;

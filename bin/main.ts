@@ -5,25 +5,10 @@ import { CSSClassList } from "src/types";
 
 const gen = (markdown: string, classes?: CSSClassList) => {
   const mdArray = analize(markdown);
+  console.log(mdArray);
   const asts = mdArray.map((md) => parse(md));
   const htmlString = generate(asts, classes ?? {});
   return htmlString;
 };
-
-console.log(
-  gen(
-    `# Hello
-\`\`\`
-console.log(Hello,World!)
-\`\`\`
-> bq1
-> bq2
-> bq3
-\`\`\`
-console.log(Hello,World!)
-\`\`\`
-`
-  )
-);
 
 export { gen };

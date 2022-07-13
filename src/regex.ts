@@ -16,6 +16,7 @@ export const LINK_ELM_REGXP = /\[(.*)\]\((.*)\)/;
 // eslint-disable-next-line no-useless-escape
 export const LIST_ELM_REGXP = /^( *)([-\*\+] (.+))$/m;
 export const BLOCKQUOTE_ELM_REGXP = /^([>| ]+)(.+)/;
+export const CODE_TYPE_REGXP = /\[\[!(.*?)!\]\]/;
 export const COMPONENT_REGXP = /@cmp\[(.*)\]\((.*)\)/;
 
 export const TEXT_ELM_REGXPS: {

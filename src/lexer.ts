@@ -78,17 +78,21 @@ const analysePre = (md: string, prevState: AnalysisState): boolean => {
     mdArray.push(preStr);
 
     state = "neutral";
+    preStr = "";
     return true;
   }
 
   // preモード開始
   if (!isPrevPreState && isCurrentPreState) {
+    const [, lang] = md.split("```");
     state = "pre";
-    preStr += md
-      .replace(/&/g, "&amp;")
-      .replace(/>/g, "&gt;")
-      .replace(/</g, "&lt;")
-      .replace(/"/g, "&quot;");
+    preStr +=
+      md
+        .replace(/&/g, "&amp;")
+        .replace(/>/g, "&gt;")
+        .replace(/</g, "&lt;")
+        .replace(/"/g, "&quot;")
+        .replace(lang, "") + (lang !== "" ? `[[!${lang}!]]` : "");
 
     return true;
   }
