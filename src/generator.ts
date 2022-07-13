@@ -51,32 +51,32 @@ const createMergedContent = (
     case "h2":
       content = `<h2${cssList.h2 ? ` class="${cssList.h2}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</h2>`;
+      }</h2>`;
       break;
     case "h3":
       content = `<h3${cssList.h3 ? ` class="${cssList.h3}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</h3>`;
+      }</h3>`;
       break;
     case "h4":
       content = `<h4${cssList.h4 ? ` class="${cssList.h4}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</h4>`;
+      }</h4>`;
       break;
     case "h5":
       content = `<h5${cssList.h1 ? ` class="${cssList.h1}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</h5>`;
+      }</h5>`;
       break;
     case "li":
       content = `<li${cssList.li ? ` class="${cssList.li}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</li>`;
+      }</li>`;
       break;
     case "ul":
       content = `<ul${cssList.ul ? ` class="${cssList.ul}"` : ""}>${
         currentToken.content
-      }>${currentToken.content}</ul>`;
+      }</ul>`;
       break;
     case "blockquote":
       content = `<blockquote${
