@@ -39,7 +39,7 @@ const createMergedContent = (
   let content = "";
   switch (parentToken.elmType) {
     case "paragraph":
-      content = `<p${cssList.paragraph ? `class="${cssList.paragraph}"` : ""}>${
+      content = `<p${cssList.p ? ` class="${cssList.p}"` : ""}>${
         currentToken.content
       }</p>`;
       break;

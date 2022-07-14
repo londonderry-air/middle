@@ -43,7 +43,7 @@ export type CSSClassList = {
   a?: string;
   code?: string;
   pre?: string;
-  paragraph?: string;
+  p?: string;
   blockquote?: string;
   root?: string;
 };
